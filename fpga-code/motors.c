@@ -18,25 +18,56 @@ int dir;
 
 void enable_motors();
 int set_motor_rotation(int dir,int state_control);
-void control_motors(int dir,int state_control,int steps);
+void control_motors(int dir,int state_control,int steps, int delayMicroseconds);
 
 int main ()  {
-    /* */ 
+    /*  
+        Given motors configuration, it makes 5 revolutions
+        and then waits 2 seconds and repeats in the other direction
+    */ 
+    /* 
+        Nema 17, 200 steps per degree, in our driver 
+        we've set 32 microsteps, so for 5 revolutions
+        we have 200*32*5 steps
+    */ 
+    int dir = 1;
+    int state_control = 0x92; // Used in the enable_motors();
+    int steps = 200*32*5;  
+    int delayMicroseconds = 350;
     enable_motors();
 	while (1)  {
-		int dir = 1;
-        int state_control = 0x92;
-        int steps = 200*32*5;
-        control_motors(dir,state_control,steps);
+		control_motors(dir,state_control,steps,delayMicroseconds);
         delay(2000);
         dir = 0;
-        control_motors(dir,state_control,steps);
+        control_motors(dir,state_control,steps,delayMicroseconds);
         delay(2000);
     }
 }
 
-void control_motors(int dir,int state_control){
-    state_control = set_motor_rotation(dir,state_control);
+void control_motors(int dir,int state_control,int steps, int delayMicroseconds){
+    /* 
+        First it updates the state_control of the 32bit IOWR pins 
+        to the given direction 
+        Then it changes the step (less significant bit) waits some time
+        in microseconds and changes again
+        first Step goes HIGH
+        ---- ---- ---- ---- ---- ---0 1001 0010 XOR
+        ---- ---- ---- ---- ---- ---0 0100 1001 
+        next Step goes LOW
+        ---- ---- ---- ---- ---- ---0 1101 1011 XOR
+        ---- ---- ---- ---- ---- ---0 0100 1001
+
+        ---- ---- ---- ---- ---- ---0 1001 0010
+    */ 
+    for(int how_many_steps = 0; how_many_steps < steps; how_many_steps++){
+        state_control = set_motor_rotation(dir,state_control);
+        state_control ^= 0x49;
+        saida (MOTOR, state_control);
+        usleep (200);
+        state_control ^= 0x49;
+        saida (MOTOR, state_control);
+        usleep (200);
+    }
 }
 
 int set_motor_rotation(int dir,int state_control){
