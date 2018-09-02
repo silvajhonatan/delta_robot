@@ -63,10 +63,10 @@ void control_motors(int dir,int state_control,int steps, int delayMicroseconds){
         state_control = set_motor_rotation(dir,state_control);
         state_control ^= 0x49;
         saida (MOTOR, state_control);
-        usleep (200);
+        usleep (delayMicroseconds);
         state_control ^= 0x49;
         saida (MOTOR, state_control);
-        usleep (200);
+        usleep (delayMicroseconds);
     }
 }
 
