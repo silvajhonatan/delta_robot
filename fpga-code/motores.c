@@ -126,7 +126,6 @@ void habilitar_motores(int variavel_de_controle){
         ---- ---- ---- ---- ---- ---0 0000 0000
         OU
         ---- ---- ---- ---- ---- ---0 1001 0010
-        ---- ---- ---- ---- ---- ---0 0000 0000
         Temos então no final a variável com todos os ENA em zero
         ---- ---- ---- ---- ---- ---0 1001 0010
     */
