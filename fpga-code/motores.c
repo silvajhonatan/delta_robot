@@ -12,7 +12,7 @@
 #define delay(MILISEGS)		usleep(1000UL * MILISEGS)
 
 
-void habilitar_motores(int variavel_de_controle);
+int habilitar_motores(int variavel_de_controle);
 int setar_direcao_do_motor(int direcao,int variavel_de_controle);
 void controlar_motores(int direcao,int variavel_de_controle,int passos, int delayMicrosegundos);
 
@@ -34,7 +34,7 @@ int main ()  {
     int porta_saida_fpga_32bits = 0x00; 
     int passos = 200*32*5;  
     int delayMicrosegundos = 350;
-    habilitar_motores(porta_saida_fpga_32bits);
+    porta_saida_fpga_32bits = habilitar_motores(porta_saida_fpga_32bits);
 	while (1)  {
 		controlar_motores(direcao,
                           porta_saida_fpga_32bits,
@@ -109,7 +109,7 @@ int setar_direcao_do_motor(int direcao,int variavel_de_controle){
     return variavel_de_controle;
 }
 
-void habilitar_motores(int variavel_de_controle){
+int habilitar_motores(int variavel_de_controle){
     /* 
         Existe 32 bits na porta de controle IOWR
         os motores de passo tem 3 comandos, step,
@@ -131,4 +131,5 @@ void habilitar_motores(int variavel_de_controle){
     */
     variavel_de_controle |= 0x92;
 	saida (MOTOR, variavel_de_controle);
+    return variavel_de_controle;
 }
